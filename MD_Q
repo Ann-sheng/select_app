@@ -1,0 +1,64 @@
+const { test, expect } = require('@playwright/test');
+
+test('Midterm Practice HTML automation', async ({ page }) => {
+  // ✅ Correct file path
+  await page.goto('file:///C:/Users/Ana/Desktop/playwrite/midterm-practice.html');
+
+  // SECTION 1: Registration
+  await page.locator('//input[@id="user-name"]').fill('student123');
+  await page.locator('input[type="password"]').fill('MySecretPass');
+  await page.locator('//input[@value="premium"]').check();
+  await page.locator('input[data-category="science"]').check();
+  await page.locator('input[data-category="fiction"]').check();
+  await page.locator('#language-dropdown').selectOption('spanish');
+  await page.locator('//select[@name="experience"]').selectOption('intermediate');
+  console.log('✅ Section 1 complete');
+
+  // SECTION 2: Color Sorting
+
+const colorBoxes = await page.locator('.color-box').all();
+
+for (const box of colorBoxes) {
+  const color = await box.getAttribute('data-color');
+
+  if (color === 'red') {
+    await box.dragTo(page.locator('.drop-zone.red-zone'));
+  } else if (color === 'blue') {
+    await box.dragTo(page.locator('.drop-zone.blue-zone'));
+  } else if (color === 'green') {
+    await box.dragTo(page.locator('.drop-zone.green-zone'));
+  }
+}
+
+await expect(page.locator('#sorting-status')).toContainText('✓ All boxes sorted');
+console.log('✅ Section 2 complete');
+
+
+  // SECTION 3: Table
+  await page.locator('#table-search').fill('1984');
+  await page.waitForTimeout(1000);
+  await page.locator('#table-search').fill('');
+  await page.locator('#sortByPrice').click();
+  await page.locator("//td[text()='1984']/following-sibling::td//button[contains(text(),'Add')]").click();
+  await page.locator("//td[contains(text(),'Tolkien')]/following-sibling::td//button[contains(text(),'View')]").click();
+  await page.waitForSelector('#actions-count');
+  await expect(page.locator('#actions-count')).toHaveText('2');
+  console.log('✅ Section 3 complete');
+
+  // SECTION 4: Grid & Dialog
+  page.once('dialog', async (dialog) => {
+    console.log('Prompt text:', dialog.message());
+    await dialog.accept('CONFIRM');
+  });
+  await page.locator('#verifyBtn').click();
+  await page.locator('.grid-box:nth-child(2)').click();
+  await page.locator('.grid-box:nth-child(5)').click();
+  await page.locator('.grid-box:nth-child(8)').click();
+  await page.waitForSelector('#required-clicked');
+  await expect(page.locator('#required-clicked')).toHaveText('3');
+  console.log('✅ Section 4 complete');
+
+  // Final submit
+  await page.locator('#submitBtn').click();
+  console.log('✅ Exam completed successfully!');
+});
