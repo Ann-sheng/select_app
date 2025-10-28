@@ -33,7 +33,6 @@ for (const box of colorBoxes) {
 await expect(page.locator('#sorting-status')).toContainText('✓ All boxes sorted');
 console.log('✅ Section 2 complete');
 
-
   // SECTION 3: Table
   await page.locator('#table-search').fill('1984');
   await page.waitForTimeout(1000);
@@ -41,21 +40,20 @@ console.log('✅ Section 2 complete');
   await page.locator('#sortByPrice').click();
   await page.locator("//td[text()='1984']/following-sibling::td//button[contains(text(),'Add')]").click();
   await page.locator("//td[contains(text(),'Tolkien')]/following-sibling::td//button[contains(text(),'View')]").click();
-  await page.waitForSelector('#actions-count');
-  await expect(page.locator('#actions-count')).toHaveText('2');
+  await expect(page.locator('#table-status')).toHaveText('✓ All required actions completed!');
   console.log('✅ Section 3 complete');
+
 
   // SECTION 4: Grid & Dialog
   page.once('dialog', async (dialog) => {
     console.log('Prompt text:', dialog.message());
     await dialog.accept('CONFIRM');
   });
-  await page.locator('#verifyBtn').click();
-  await page.locator('.grid-box:nth-child(2)').click();
-  await page.locator('.grid-box:nth-child(5)').click();
-  await page.locator('.grid-box:nth-child(8)').click();
-  await page.waitForSelector('#required-clicked');
-  await expect(page.locator('#required-clicked')).toHaveText('3');
+    await page.locator('#verifyBtn').click();
+await page.locator('.grid-box[data-position="2"]').click();
+await page.locator('.grid-box[data-position="5"]').click();
+await page.locator('.grid-box[data-position="8"]').click();
+  await expect(page.locator('#grid-status')).toHaveText('✓ All required boxes clicked!');
   console.log('✅ Section 4 complete');
 
   // Final submit
