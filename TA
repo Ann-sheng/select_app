@@ -1,0 +1,46 @@
+const { chromium } = require('playwright');
+
+(async () => {
+  // 1. Launch browser in non-headless mode
+  const browser = await chromium.launch({ headless: false });
+
+  // 2. Create isolated browser context (like a new session)
+  const context = await browser.newContext();
+
+  // 3. Open 3 tabs with different websites
+  const google = await context.newPage();
+  await google.goto('https://www.google.com');
+
+  const github = await context.newPage();
+  await github.goto('https://www.github.com');
+
+  const wikipedia = await context.newPage();
+  await wikipedia.goto('https://www.wikipedia.org');
+
+  // 4. Verify all 3 tabs are open
+  console.log(`Open tabs: ${context.pages().length}`); // Should print 3
+
+  // 5. Switch between tabs and interact
+  await google.bringToFront();
+  await google.locator('textarea[name="q"]').fill('Playwright automation');
+
+  await github.bringToFront();
+  console.log('On GitHub:', await github.title());
+
+  await wikipedia.bringToFront();
+  console.log('Wikipedia title:', await wikipedia.title());
+
+  // 6. Close tabs in sequence
+  await google.close();
+  console.log(`Tabs after closing Google: ${context.pages().length}`);
+
+  await github.close();
+  console.log(`Tabs after closing GitHub: ${context.pages().length}`);
+
+  await wikipedia.close();
+  console.log(`Tabs after closing Wikipedia: ${context.pages().length}`);
+
+  // 7. Cleanup
+  await context.close();
+  await browser.close();
+})();
