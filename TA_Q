@@ -1,0 +1,63 @@
+import { test, expect } from '@playwright/test';
+
+ test('task 1 - input selectors', async ({ page }) => {
+   await page.goto('file:///C:/Users/Ana/Desktop/playwrite/playwright_quiz.html');
+
+
+    const firstNameInput = await page.locator('[data-testid="first-name-input"]').fill('Ana');
+    const lastNameInput = await page.locator('//input[@aria-label="last-name-field"]').fill('Shengelia');
+    const departmentSelect = await page.locator('#department-select');
+    await departmentSelect.selectOption({ label: 'Marketing' });
+    const companyEmailInput = await page.locator('//input[contains(@placeholder, "company")]').fill('a_shengelia5@cu.edu.ge');
+});
+
+
+ test('test 2 - dynamic list', async ({ page }) => {
+   await page.goto('file:///C:/Users/Ana/Desktop/playwrite/playwright_quiz.html');
+
+    const firstItem = await page.locator('//div[@data-item="1"]');
+    await firstItem.click();
+
+    const resultText = await page.locator('#selection-result');
+    await expect(resultText).toBeVisible();
+
+});
+
+
+ test('test 3 - drag and drop', async ({ page }) => {
+   await page.goto('file:///C:/Users/Ana/Desktop/playwrite/playwright_quiz.html');
+
+    const boxA = await page.locator('[data-box="A"]');
+    const boxB = await page.locator('[data-box="B"]');
+    const zone1 = await page.locator('#drop-zone-1');
+    const zone2 = await page.locator('#drop-zone-2');
+
+    await boxA.dragTo(zone1);
+    await boxB.dragTo(zone2);
+
+    await expect(zone1.locator('.dropped')).toHaveCount(1); 
+    await expect(zone2.locator('.dropped')).toHaveCount(1); 
+
+    const resultText = await page.locator('#drag-result');
+    await expect(resultText).toBeVisible
+
+});
+
+
+test('test 4 - dialog handling', async ({ page }) => {
+   await page.goto('file:///C:/Users/Ana/Desktop/playwrite/playwright_quiz.html');
+
+       page.on('dialog', async dialog => {
+        expect(dialog.message()).toBe('Do you want to proceed with this action?');
+        await dialog.accept();
+    });
+
+    await page.locator('#trigger-confirm').click();
+
+    const resultText = await page.locator('#confirm-result');
+    await expect(resultText).toHaveText('✓ Dialog was accepted');
+
+
+});
+
+
